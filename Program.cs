@@ -1,26 +1,105 @@
-﻿namespace ConsoleApp27
+﻿using System.Collections;
+
+namespace ConsoleApp27
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            var grandMother = new FamilyMember() { Mother = null, Father = null, Name = "Маша", Sex = Gender.Female };
-            var grandFather = new FamilyMember() { Mother = null, Father = null, Name = "Миша", Sex = Gender.Male };
-            var father = new FamilyMember() { Mother = null, Father = null, Name = "Игорь", Sex = Gender.Male };
-            var mother = new FamilyMember() { Mother = grandMother, Father = grandFather, Name = "Ира", Sex = Gender.Female };
-            grandMother.AddChild(mother);
-            grandFather.AddChild(mother);
-            var son = new FamilyMember() { Mother = mother, Father = father, Name = "Антон", Sex = Gender.Male };
-            var daughter = new FamilyMember() { Mother = mother, Father = father, Name = "Аня", Sex = Gender.Female };
-            mother.AddChild(son);
-            father.AddChild(son);
-            father.AddChild(daughter);
-            mother.AddChild(daughter);
+            int[,] labirynth = new int[,]
+            {
+                {1, 1, 1, 1, 1, 1, 1 },
+                {1, 0, 0, 0, 0, 0, 1 },
+                {1, 0, 1, 1, 1, 0, 1 },
+                {0, 0, 0, 0, 1, 0, 0 },
+                {1, 1, 0, 0, 0, 0, 1 },
+                {1, 1, 1, 0, 1, 0, 1 },
+                {1, 1, 1, 0, 1, 1, 1 }
+            };
 
-			//daughter.MothersLine();
 
-			daughter.Relation();
 
-		}
+            Console.WriteLine(HasExit(1, 3, labirynth));
+
+            Console.WriteLine(HasExitRecursive(1, 3, labirynth));
+
+        }
+
+        static bool HasExit(int i, int j, int[,] lab)
+        {
+            Stack<Tuple<int, int>> stack = new Stack<Tuple<int, int>>();
+
+            if (lab[i, j] == 0)
+                stack.Push(new(i, j));
+
+            int count = 0;
+
+            while (stack.Count > 0) {
+                Tuple<int, int> current = stack.Pop();
+                if (current.Item1 < 0 || current.Item2 == lab.GetLength(0))
+                    continue;
+                if (current.Item2 < 0 || current.Item2 == lab.GetLength(1))
+                    continue;
+                if (lab[current.Item1, current.Item2] == 1 || lab[current.Item1, current.Item2] == 2)
+                    continue;
+                if (lab.GetLength(0) - 1 == current.Item1 || lab.GetLength(1) - 1 == current.Item2 || current.Item1 == 0 || current.Item2 == 0)
+                {
+                    count++;
+                    continue;
+					lab[current.Item1, current.Item2] = 2; 
+				}
+                lab[current.Item1, current.Item2] = 2;
+
+                stack.Push(new (current.Item1 + 1, current.Item2));
+                stack.Push(new (current.Item1 - 1, current.Item2));
+                stack.Push(new (current.Item1, current.Item2 + 1));
+                stack.Push(new (current.Item1, current.Item2 - 1));
+            }
+            Console.WriteLine(count.ToString());
+            return false;
+        }
+
+
+        static bool HasExitRecursive(int i, int j, int[,] lab)
+        {
+            if (lab[i, j] != 0)
+                return false;
+            return HasExitRec(i, j, lab);
+        }
+
+        static bool HasExitRec(int i, int j, int[,] lab)
+        {
+            lab[i, j] = 2;
+
+            if (lab.GetLength(0) - 1 == i || lab.GetLength(1) - 1 == j || i == 0 || j == 0)
+                return true;
+
+            bool exit = false;
+
+            if (lab[i + 1, j] == 0)
+                if (HasExitRec(i + 1, j, lab))
+                    return true;
+            if (lab[i - 1, j] == 0)
+                if (HasExitRec(i - 1, j, lab))
+                    return true;
+            if (lab[i, j + 1] == 0)
+                if (HasExitRec(i, j + 1, lab))
+                    return true;
+            if (lab[i, j - 1] == 0)
+                if (HasExitRec(i, j - 1, lab))
+                    return true;
+            return exit;
+        }
+
+        public static void Print(int[,] array)
+        {
+            for (int i = 0; i < array.GetLength(0); i++) {
+                for (int j = 0; j < array.GetLength(1); j++) {
+                    Console.Write($"{array[i, j]} ");
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine();
+        }
     }
 }
