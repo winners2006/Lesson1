@@ -1,28 +1,51 @@
-﻿using System.Collections;
+﻿using ConsoleApp1;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+
+delegate void MyDelegate();
 
 namespace ConsoleApp27
 {
-    internal class Program
+    class Program
     {
+
         static void Main(string[] args)
         {
-			//Дан массив и число. Найдите три числа в массиве сумма которых равна искомому числу.
-            //Подсказка: если взять первое число в массиве, можно ли найти в оставшейся его части два числа равных по сумме первому.
-            //
-            int[] array = { 1, 2, 3, 10, 12, 53, 6, 25, 9, 11, 7, 5 };
+			Console.WriteLine("Введите путь к папке для поиска:");
+			string directoryPath = Console.ReadLine();
 
-            int nam = 34;
+			while (!Directory.Exists(directoryPath))
+			{
+				Console.WriteLine("Указанный путь не существует. Попробуйте еще раз:");
+				directoryPath = Console.ReadLine();
+			}
 
-            var s = new HashSet<int>();
+			Console.WriteLine("Введите расширение файлов (без точки, например, txt):");
+			string fileExtension = Console.ReadLine();
 
-            foreach (int i in array)
-            {
-                var x = nam - i;
-                if (s.Contains(x))
-                    Console.WriteLine($"{x} + {i} = {x+i}");
-                else 
-                    s.Add(i);
-            }
+			while (string.IsNullOrWhiteSpace(fileExtension))
+			{
+				Console.WriteLine("Расширение не может быть пустым. Попробуйте еще раз:");
+				fileExtension = Console.ReadLine();
+			}
+
+			Console.WriteLine("Введите текст для поиска:");
+			string searchText = Console.ReadLine();
+
+			while (string.IsNullOrWhiteSpace(searchText))
+			{
+				Console.WriteLine("Текст для поиска не может быть пустым. Попробуйте еще раз:");
+				searchText = Console.ReadLine();
+			}
+
+			FileSearcher searcher = new FileSearcher(directoryPath, fileExtension, searchText);
+			searcher.Search();
+
+			Console.WriteLine("Поиск завершен.");
+			Console.ReadLine();
 		}
-	}
+    }
+
 }
